@@ -20,10 +20,27 @@ Update equations:
 - Standard kinematic motion model is used and updated in the simulation
 
 x_[t+1] = x[t] + v[t] * cos(psi[t]) * dt
+y_[t+1] = y[t] + v[t] * sin(psi[t]) * dt
+psi_[t+1] = psi[t] + v[t] / Lf * delta[t] * dt
+v_[t+1] = v[t] + a[t] * dt
+cte[t+1] = f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt
+epsi[t+1] = psi[t] - psides[t] + v[t] * delta[t] / Lf * dt
 
 **Timestep Len and Elapsed Duration (N & dt)**
 
 - I experimentally chose the timestep length (N) and (dt) to balance future estimation vs computational load. The values I chose provided enough future-expectation while also allowing the simulation to run in real time. 
+
+Increasing the dt while holding N constant increased the resolution of controller but inversely decreased the reaction time of the controller because of increased computational overhead.
+
+Decreasing dt while holding N constant increased the look ahead amount. Having this too far ahead resulted in erratic performance and poor short term performance. 
+
+Increasing N to a high value while holding dt constant (at .1) resulted in extremely erratic behaviour. It seems that when the foresight distance gets too long the controller has a lot of trouble performing smoothly.
+
+Decreasing N while keeping dt constant at (0.1) resulted in the controller having enough foresight. Thus when encountering a turn the vehicle had difficulty remaining on the road. 
+
+Thus the solution was to find the sweetspot of resolution and foresight where the controller could deal with tight turns but also be reactive in terms of computational load. 
+
+N=20 and dt = 0.1 was found to work based on empirical analysis.
 
 **Polynomial fitting and Preprocessing**
 
